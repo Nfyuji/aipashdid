@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}صندوق المشبوه - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-inbox"></i> صندوق المشبوه</h1>
+    <p class="text-muted">الرسائل ذات الخطورة المتوسطة والعالية — مراجعة وتحديد الحالة</p>
+</div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المرسل</th>
+                <th>الموضوع</th>
+                <th>التصنيف</th>
+                <th>الخطورة</th>
+                <th>النقاط</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in items %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.sender_email }}</td>
+                <td><a href="{{ url_for('employee.result', id=e.id) }}" class="link-row">{{ e.subject[:40] }}{% if e.subject|length > 40 %}...{% endif %}</a></td>
+                <td><span class="badge badge-secondary">{{ e.get_classification_arabic() if e.classification else '—' }}</span></td>
+                <td><span class="badge {{ e.get_risk_badge_class() }}">{{ e.get_risk_arabic() }}</span></td>
+                <td>{{ e.risk_score }}</td>
+                <td><span class="badge {{ 'badge-warning' if e.status == 'pending' else 'badge-success' if e.status == 'reviewed' else 'badge-danger' }}">{{ e.status }}</span></td>
+                <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') if e.created_at else '—' }}</td>
+                <td>
+                    {% if e.status == 'pending' %}
+                    <form method="post" action="{{ url_for('security.suspicious_inbox') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="email_id" value="{{ e.id }}">
+                        <button type="submit" name="action" value="reviewed" class="btn btn-secondary">مراجعة</button>
+                        <button type="submit" name="action" value="blocked" class="btn btn-danger">حظر</button>
+                    </form>
+                    {% else %}—{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not items %}
+            <tr><td colspan="9" class="empty-state">لا توجد رسائل مشبوهة</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<p style="margin-top:1rem;"><a href="{{ url_for('security.security_center') }}" class="btn btn-secondary"><i class="fas fa-arrow-right"></i> العودة لمركز الأمن</a></p>
+{% endblock %}

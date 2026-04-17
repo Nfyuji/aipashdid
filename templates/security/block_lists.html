@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}قوائم الحظر - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-ban"></i> قوائم الحظر</h1>
+    <p class="text-muted">إدارة قوائم الحظر (بريد، نطاق، رابط)</p>
+</div>
+<div class="card">
+    <h3 style="margin-bottom: 1rem;"><i class="fas fa-plus"></i> إضافة عنصر</h3>
+    <form method="post" action="{{ url_for('security.block_lists') }}" style="max-width: 500px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+            <label>القيمة (بريد / نطاق / رابط)</label>
+            <input type="text" name="value" class="form-control" placeholder="مثال: phishing@evil.com أو evil.com" required>
+        </div>
+        <div class="form-group">
+            <label>النوع</label>
+            <select name="list_type" class="form-control">
+                <option value="email">بريد إلكتروني</option>
+                <option value="domain">نطاق</option>
+                <option value="url">رابط</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>السبب (اختياري)</label>
+            <input type="text" name="reason" class="form-control" placeholder="سبب الإضافة">
+        </div>
+        <button type="submit" class="btn btn-primary">إضافة للحظر</button>
+    </form>
+</div>
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-list"></i> عناصر القائمة</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>القيمة</th>
+                    <th>النوع</th>
+                    <th>السبب</th>
+                    <th>التاريخ</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in entries %}
+                <tr>
+                    <td>{{ e.id }}</td>
+                    <td>{{ e.value }}</td>
+                    <td><span class="badge badge-secondary">{{ e.get_type_arabic() }}</span></td>
+                    <td>{{ e.reason or '—' }}</td>
+                    <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') if e.created_at else '—' }}</td>
+                    <td>
+                        <form method="post" action="{{ url_for('security.block_lists') }}" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="block_id" value="{{ e.id }}">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('حذف هذا العنصر؟');">حذف</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not entries %}
+                <tr><td colspan="6" class="empty-state">لا توجد عناصر في قائمة الحظر</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

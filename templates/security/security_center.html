@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}مركز الأمن - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-server"></i> مركز القيادة الأمنية</h1>
+    <p class="text-muted">مراقبة التهديدات والأحداث الأمنية</p>
+</div>
+<div class="cards-grid">
+    <div class="stat-card stat-danger">
+        <i class="fas fa-bug"></i>
+        <span class="stat-value">{{ threats_count }}</span>
+        <span class="stat-label">تهديدات نشطة</span>
+    </div>
+    <div class="stat-card stat-warning">
+        <i class="fas fa-envelope"></i>
+        <span class="stat-value">{{ high_risk_count }}</span>
+        <span class="stat-label">رسائل مشبوهة قيد المراجعة</span>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-ban"></i>
+        <span class="stat-value">{{ block_count }}</span>
+        <span class="stat-label">عناصر في قوائم الحظر</span>
+    </div>
+    <div class="stat-card stat-danger">
+        <i class="fas fa-shield-halved"></i>
+        <span class="stat-value">{{ phishing_count }}</span>
+        <span class="stat-label">رسائل تصيد (عالي)</span>
+    </div>
+</div>
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-history"></i> آخر التهديدات</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>العنوان</th>
+                    <th>الخطورة</th>
+                    <th>الحالة</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in recent_threats %}
+                <tr>
+                    <td>{{ t.title[:50] }}{% if t.title|length > 50 %}...{% endif %}</td>
+                    <td><span class="badge {{ t.get_severity_badge_class() }}">{{ t.get_severity_arabic() }}</span></td>
+                    <td>{{ t.status }}</td>
+                    <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else '—' }}</td>
+                </tr>
+                {% endfor %}
+                {% if not recent_threats %}
+                <tr><td colspan="4" class="empty-state">لا توجد تهديدات</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="grid-2">
+    <a href="{{ url_for('security.block_lists') }}" class="card link-row" style="display: block;"><i class="fas fa-ban"></i> إدارة قوائم الحظر</a>
+    <a href="{{ url_for('security.suspicious_inbox') }}" class="card link-row" style="display: block;"><i class="fas fa-inbox"></i> صندوق المشبوه</a>
+    <a href="{{ url_for('security.threat_map') }}" class="card link-row" style="display: block;"><i class="fas fa-map"></i> خريطة التهديدات</a>
+    <a href="{{ url_for('security.attack_details') }}" class="card link-row" style="display: block;"><i class="fas fa-bug"></i> تفاصيل الهجمات</a>
+    <a href="{{ url_for('security.report_threat') }}" class="card link-row" style="display: block;"><i class="fas fa-plus-circle"></i> إبلاغ عن تهديد</a>
+</div>
+{% endblock %}

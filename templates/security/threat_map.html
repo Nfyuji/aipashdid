@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}خريطة التهديدات - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-map"></i> خريطة التهديدات</h1>
+    <p class="text-muted">توزيع التهديدات حسب المصدر / الدولة</p>
+</div>
+<p><a href="{{ url_for('security.report_threat') }}" class="btn btn-secondary"><i class="fas fa-plus-circle"></i> إبلاغ عن تهديد</a></p>
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-globe"></i> حسب رمز الدولة</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>رمز الدولة</th>
+                    <th>عدد التهديدات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cc, count in by_country.items() %}
+                <tr>
+                    <td>{{ cc }}</td>
+                    <td><strong>{{ count }}</strong></td>
+                </tr>
+                {% endfor %}
+                {% if not by_country %}
+                <tr><td colspan="2" class="empty-state">لا توجد بيانات</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-bug"></i> قائمة التهديدات</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>العنوان</th>
+                    <th>الخطورة</th>
+                    <th>المصدر / الدولة</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in threats %}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td>{{ t.title[:50] }}{% if t.title|length > 50 %}...{% endif %}</td>
+                    <td><span class="badge {{ t.get_severity_badge_class() }}">{{ t.get_severity_arabic() }}</span></td>
+                    <td>{{ t.source_ip or '—' }} {{ t.country_code or '—' }}</td>
+                    <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else '—' }}</td>
+                </tr>
+                {% endfor %}
+                {% if not threats %}
+                <tr><td colspan="5" class="empty-state">لا توجد تهديدات</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

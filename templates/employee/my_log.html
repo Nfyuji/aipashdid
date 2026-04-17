@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}سجلي - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-history"></i> سجلي</h1>
+    <p class="text-muted">سجل التحليلات التي قمت بها</p>
+</div>
+{% if total is defined and high_count is defined %}
+<div class="cards-grid" style="margin-bottom: 1rem;">
+    <div class="stat-card">
+        <i class="fas fa-list"></i>
+        <span class="stat-value">{{ total }}</span>
+        <span class="stat-label">إجمالي التحليلات</span>
+    </div>
+    <div class="stat-card stat-danger">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="stat-value">{{ high_count }}</span>
+        <span class="stat-label">عالي الخطورة</span>
+    </div>
+</div>
+{% endif %}
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المرسل</th>
+                <th>الموضوع</th>
+                <th>التصنيف</th>
+                <th>الخطورة</th>
+                <th>النقاط</th>
+                <th>التاريخ</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in emails %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.sender_email }}</td>
+                <td>{{ e.subject[:50] }}{% if e.subject|length > 50 %}...{% endif %}</td>
+                <td><span class="badge badge-secondary">{{ e.get_classification_arabic() if e.classification else '—' }}</span></td>
+                <td><span class="badge {{ e.get_risk_badge_class() }}">{{ e.get_risk_arabic() }}</span></td>
+                <td>{{ e.risk_score }}</td>
+                <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') if e.created_at else '—' }}</td>
+                <td><a href="{{ url_for('employee.result', id=e.id) }}" class="btn btn-secondary">عرض</a></td>
+            </tr>
+            {% endfor %}
+            {% if not emails %}
+            <tr><td colspan="8" class="empty-state">لا توجد تحليلات بعد. <a href="{{ url_for('employee.analyze') }}">تحليل رسالة</a></td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<p style="margin-top: 1rem;"><a href="{{ url_for('employee.analyze') }}" class="btn btn-primary"><i class="fas fa-search"></i> تحليل رسالة جديدة</a> <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">لوحتي</a></p>
+{% endblock %}

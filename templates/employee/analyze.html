@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}تحليل بريد - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-search"></i> تحليل بريد</h1>
+    <p class="text-muted">أدخل بيانات الرسالة لتحليلها واكتشاف التصيد الاحتيالي</p>
+</div>
+<div class="card" style="max-width: 600px;">
+    <form method="post" action="{{ url_for('employee.analyze') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label>البريد المرسل</label>
+            <input type="text" name="sender_email" class="form-control" placeholder="مثال: sender@example.com" required>
+        </div>
+        <div class="form-group">
+            <label>الموضوع</label>
+            <input type="text" name="subject" class="form-control" placeholder="موضوع الرسالة" required>
+        </div>
+        <div class="form-group">
+            <label>نص الرسالة (اختياري)</label>
+            <textarea name="body" class="form-control" rows="6" placeholder="الصق محتوى الرسالة هنا..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> تحليل</button>
+        <a href="{{ url_for('employee.inbox') }}" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div>
+{% endblock %}

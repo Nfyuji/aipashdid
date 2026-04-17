@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}فريقي - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-users"></i> فريقي</h1>
+    <p class="text-muted">أعضاء الفريق وإحصائيات التحليل</p>
+</div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>اسم المستخدم</th>
+                <th>البريد</th>
+                <th>القسم</th>
+                <th>الدور</th>
+                <th>عدد التحليلات</th>
+                <th>عالي الخطورة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in team_stats %}
+            <tr>
+                <td>{{ s.user.id }}</td>
+                <td>{{ s.user.full_name }}</td>
+                <td>{{ s.user.username }}</td>
+                <td>{{ s.user.email }}</td>
+                <td>{{ s.user.department }}</td>
+                <td><span class="badge badge-info">{{ s.user.get_role_arabic() }}</span></td>
+                <td>{{ s.total }}</td>
+                <td><span class="badge {{ 'badge-danger' if s.high_risk else 'badge-success' }}">{{ s.high_risk }}</span></td>
+            </tr>
+            {% endfor %}
+            {% if not team_stats %}
+            <tr><td colspan="8" class="empty-state">لا يوجد أعضاء في الفريق</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<p style="margin-top:1rem;"><a href="{{ url_for('manager.department_reports') }}" class="btn btn-primary"><i class="fas fa-chart-bar"></i> تقارير القسم</a></p>
+{% endblock %}

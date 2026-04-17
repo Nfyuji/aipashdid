@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    {% include 'components/theme_head.html' %}
+    <title>وضع الصيانة - PhishDetector</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
+        .cardx { max-width: 560px; width:100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); padding: 2.5rem; text-align:center; }
+        .icon { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
+        h1 { margin-bottom: 0.75rem; }
+        p { color: var(--text-secondary); line-height: 1.9; }
+        a { color: var(--primary); font-weight: 700; }
+    </style>
+</head>
+<body>
+    <button type="button" class="theme-toggle" data-theme-toggle title="المظهر" aria-label="تبديل المظهر" style="position:fixed;z-index:9999;inset-inline-end:1rem;top:1rem;"><i class="fas fa-sun"></i></button>
+    <div class="wrap">
+        <div class="cardx">
+            <div class="icon"><i class="fas fa-screwdriver-wrench"></i></div>
+            <h1>النظام في وضع الصيانة</h1>
+            <p>نقوم حالياً ببعض التحديثات. يرجى المحاولة لاحقاً.</p>
+            <p style="margin-top: 1rem;">
+                إذا كنت <strong>أدمن</strong> يمكنك تسجيل الدخول من هنا:
+                <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>
+            </p>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+

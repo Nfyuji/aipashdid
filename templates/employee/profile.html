@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}الملف الشخصي - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-id-card"></i> الملف الشخصي</h1>
+    <p class="text-muted">تعديل معلوماتك وكلمة المرور</p>
+</div>
+<div class="card" style="max-width: 520px;">
+    <div style="margin-bottom: 1rem;">
+        <span class="badge badge-info">{{ current_user.get_role_arabic() }}</span>
+        <span class="text-muted"> — {{ current_user.department }}</span>
+    </div>
+    <form method="post" action="{{ url_for('employee.profile') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label>الاسم الكامل</label>
+            <input type="text" name="full_name" class="form-control" value="{{ current_user.full_name }}" required>
+        </div>
+        <div class="form-group">
+            <label>اسم المستخدم</label>
+            <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="text" class="form-control" value="{{ current_user.email }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>القسم</label>
+            <input type="text" class="form-control" value="{{ current_user.department }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>كلمة مرور جديدة (اتركها فارغة إن لم تُرد التغيير)</label>
+            <input type="password" name="new_password" class="form-control" placeholder="6 أحرف على الأقل" minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+    </form>
+</div>
+<p style="margin-top:1rem;"><a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary"><i class="fas fa-arrow-right"></i> لوحتي</a></p>
+{% endblock %}

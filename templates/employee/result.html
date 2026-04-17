@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}نتيجة التحليل - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-check-circle"></i> نتيجة التحليل</h1>
+    <p class="text-muted">نتيجة فحص الرسالة من نظام كشف التصيد</p>
+</div>
+{% if email %}
+<div class="card">
+    <div class="table-wrap">
+        <table>
+            <tr><th style="width: 140px;">المرسل</th><td>{{ email.sender_email }}</td></tr>
+            <tr><th>الموضوع</th><td>{{ email.subject }}</td></tr>
+            <tr><th>مستوى الخطورة</th><td><span class="badge {{ email.get_risk_badge_class() }}">{{ email.get_risk_arabic() }}</span> ({{ email.risk_score }} نقطة)</td></tr>
+            <tr><th>التصنيف</th><td><strong>{{ email.get_classification_arabic() if email.classification else 'عادي' }}</strong> ({{ email.classification or 'legitimate' }})</td></tr>
+            <tr><th>تفسير التصنيف</th><td>{{ email.reasons or '—' }}</td></tr>
+            <tr><th>الحالة</th><td>{{ email.status }}</td></tr>
+            <tr><th>النموذج المستخدم</th><td>{% if model_used_display == 'ml' %}<span class="badge badge-info">نموذج ML (Random Forest + TF-IDF)</span>{% else %}<span class="badge badge-secondary">قواعد التحليل</span>{% endif %}</td></tr>
+            <tr><th>التاريخ</th><td>{{ email.created_at.strftime('%Y-%m-%d %H:%M') if email.created_at else '—' }}</td></tr>
+        </table>
+    </div>
+</div>
+{% if email.body %}
+<div class="card">
+    <h3 style="margin-bottom: 0.5rem;">نص الرسالة</h3>
+    <pre style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm); overflow-x: auto; white-space: pre-wrap; font-size: 0.9rem;">{{ email.body }}</pre>
+</div>
+{% endif %}
+<p style="margin-top: 1rem;">
+    <a href="{{ url_for('employee.analyze') }}" class="btn btn-primary"><i class="fas fa-search"></i> تحليل رسالة أخرى</a>
+    <a href="{{ url_for('employee.inbox') }}" class="btn btn-secondary">صندوق الوارد</a>
+</p>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>لا توجد نتيجة لعرضها. قم <a href="{{ url_for('employee.analyze') }}">بتحليل رسالة</a> أولاً.</p>
+</div>
+{% endif %}
+{% endblock %}
