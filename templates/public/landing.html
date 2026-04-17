@@ -180,9 +180,141 @@
             text-shadow: 0 0 15px var(--primary-glow);
         }
 
-        .nav-buttons {
+        .navbar-inner {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
             gap: 1rem;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: nowrap;
+        }
+
+        .nav-auth-desktop {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* زر فتح القائمة — يظهر على الجوال فقط */
+        .landing-menu-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .landing-menu-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        .landing-drawer-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1090;
+            background: rgba(0, 0, 0, 0.55);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+
+        body.landing-nav-open .landing-drawer-backdrop {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        body.landing-nav-open {
+            overflow: hidden;
+        }
+
+        .landing-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: min(300px, 88vw);
+            z-index: 1100;
+            background: linear-gradient(180deg, rgba(13, 14, 21, 0.98), rgba(8, 9, 14, 0.99));
+            border-left: 1px solid var(--glass-border);
+            box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+            transform: translateX(100%);
+            transition: transform 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            padding: calc(1rem + env(safe-area-inset-top, 0)) 1.25rem 1.25rem;
+            padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0));
+        }
+
+        body.landing-nav-open .landing-drawer {
+            transform: translateX(0);
+        }
+
+        .landing-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .landing-drawer-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .landing-drawer-close:hover {
+            color: var(--accent);
+            background: rgba(255, 0, 60, 0.12);
+        }
+
+        .landing-drawer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .landing-drawer-links .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.9rem 1rem;
+        }
+
+        html[data-theme="light"] .landing-drawer {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(240, 244, 252, 0.99));
+            border-left-color: rgba(15, 23, 42, 0.1);
+        }
+
+        html[data-theme="light"] .landing-menu-toggle,
+        html[data-theme="light"] .landing-drawer-close {
+            background: rgba(15, 23, 42, 0.06);
+            border-color: rgba(15, 23, 42, 0.12);
+            color: var(--text-main);
         }
 
         /* ── Buttons ── */
@@ -797,6 +929,19 @@
         }
 
         @media (max-width: 768px) {
+            /* أداء أفضل على الجوال */
+            .cyber-grid-bg {
+                animation: none;
+                opacity: 0.25;
+                transform: none;
+            }
+
+            .orb {
+                animation: none;
+                filter: blur(56px);
+                opacity: 0.35;
+            }
+
             .glass-grid {
                 grid-template-columns: 1fr;
             }
@@ -809,8 +954,72 @@
                 font-size: 2.5rem;
             }
 
+            .cta-banner p {
+                font-size: 1rem !important;
+                margin-bottom: 1.75rem !important;
+            }
+
             .dashboard-img {
                 height: 300px;
+            }
+
+            .navbar-inner {
+                flex-wrap: nowrap;
+                align-items: center;
+            }
+
+            .navbar .logo {
+                font-size: 1.35rem;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .nav-auth-desktop {
+                display: none;
+            }
+
+            .landing-menu-toggle {
+                display: inline-flex;
+            }
+
+            .hero {
+                padding-top: 5.5rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .hero-text h1 {
+                font-size: 1.65rem;
+            }
+
+            .stat-item h3 {
+                font-size: 2rem;
+            }
+
+            .cta-banner h2 {
+                font-size: 1.75rem;
+            }
+
+        }
+
+        @media (min-width: 769px) {
+            .landing-menu-toggle {
+                display: none !important;
+            }
+
+            .landing-drawer,
+            .landing-drawer-backdrop {
+                display: none !important;
             }
         }
     </style>
@@ -825,22 +1034,43 @@
 
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div class="container navbar-inner">
             <a href="{{ url_for('auth.landing') }}" class="logo">
                 <i class="fas fa-microchip"></i>
                 PhishDetector<span style="color:var(--primary)">.</span>
             </a>
-            <div class="nav-buttons" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <div class="navbar-actions">
                 <button type="button" class="theme-toggle" data-theme-toggle title="المظهر" aria-label="تبديل المظهر"><i class="fas fa-sun"></i></button>
-                <a href="{{ url_for('auth.login') }}" class="btn btn-glow">
-                    <i class="fas fa-fingerprint"></i> دخول النظام
-                </a>
-                <a href="{{ url_for('auth.register') }}" class="btn btn-solid">
-                    إنشاء حساب <i class="fas fa-arrow-left"></i>
-                </a>
+                <div class="nav-auth-desktop">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-glow">
+                        <i class="fas fa-fingerprint"></i> دخول النظام
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-solid">
+                        إنشاء حساب <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+                <button type="button" class="landing-menu-toggle" data-landing-nav-toggle aria-label="فتح القائمة" aria-expanded="false" aria-controls="landingDrawer">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </nav>
+
+    <div class="landing-drawer-backdrop" data-landing-nav-close aria-hidden="true"></div>
+    <aside class="landing-drawer" id="landingDrawer" aria-hidden="true" aria-label="قائمة التنقل">
+        <div class="landing-drawer-header">
+            <span>القائمة</span>
+            <button type="button" class="landing-drawer-close" data-landing-nav-close aria-label="إغلاق القائمة"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="landing-drawer-links">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-glow">
+                <i class="fas fa-fingerprint"></i> دخول النظام
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-solid">
+                إنشاء حساب <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </aside>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -1056,10 +1286,13 @@
     <script src="{{ url_for('static', filename='vendor/aos/aos.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-        // Init AOS Animation Library
+        // مكتبة AOS — معطّلة على الجوال لتخفيف التحميل
         AOS.init({
             once: true,
             offset: 50,
+            disable: function () {
+                return window.innerWidth < 768;
+            }
         });
 
         // Navbar Blur Effect on Scroll
@@ -1071,6 +1304,47 @@
                 nav.classList.remove('scrolled');
             }
         });
+
+        // قائمة جانبية للجوال: دخول + إنشاء حساب
+        (function () {
+            var body = document.body;
+            var btn = document.querySelector('[data-landing-nav-toggle]');
+            var drawer = document.getElementById('landingDrawer');
+            if (!btn || !drawer) return;
+
+            function setOpen(open) {
+                body.classList.toggle('landing-nav-open', !!open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+            }
+
+            btn.addEventListener('click', function () {
+                if (window.innerWidth >= 769) return;
+                setOpen(!body.classList.contains('landing-nav-open'));
+            });
+
+            document.querySelectorAll('[data-landing-nav-close]').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    setOpen(false);
+                });
+            });
+
+            drawer.querySelectorAll('a.btn').forEach(function (a) {
+                a.addEventListener('click', function () {
+                    setOpen(false);
+                });
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 769) setOpen(false);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && body.classList.contains('landing-nav-open')) {
+                    setOpen(false);
+                }
+            });
+        })();
 
         // Number Counter Animation
         const counters = document.querySelectorAll('.counter');
@@ -1100,15 +1374,20 @@
             observer.observe(counter);
         });
 
-        // 3D Shield Mouse Move Effect
-        document.addEventListener('mousemove', (e) => {
-            const shield = document.querySelector('.shield-core');
-            if (shield) {
-                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-                shield.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        // تأثير الدرع 3D بالماوس — فقط على الشاشات الواسعة (لا يُنصح على الجوال)
+        (function () {
+            function allowHeavyMotion() {
+                return window.innerWidth >= 768 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             }
-        });
+            if (!allowHeavyMotion()) return;
+            document.addEventListener('mousemove', function (e) {
+                var shield = document.querySelector('.shield-core');
+                if (!shield) return;
+                var xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                var yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                shield.style.transform = 'rotateY(' + xAxis + 'deg) rotateX(' + yAxis + 'deg)';
+            });
+        })();
     </script>
 </body>
 

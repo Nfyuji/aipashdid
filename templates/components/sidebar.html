@@ -1,8 +1,8 @@
 <!-- القائمة الجانبية - كل دور يرى أقسامه فقط -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i class="fas fa-shield-halved"></i>
-        <span>PhishDetector</span>
+        <span class="sidebar-brand-text"><i class="fas fa-shield-halved"></i> PhishDetector</span>
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="إغلاق القائمة"><i class="fas fa-times"></i></button>
     </div>
     <nav class="sidebar-nav">
         {% set is_admin = current_user.role == 'admin' %}

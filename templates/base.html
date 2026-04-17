@@ -17,10 +17,12 @@
 <body class="dashboard-body">
     {% if current_user.is_authenticated %}
     {% include 'components/sidebar.html' %}
+    <div class="sidebar-backdrop" data-sidebar-close aria-hidden="true"></div>
     {% endif %}
     <main class="main-content">
         {% if current_user.is_authenticated %}
         <header class="dashboard-header">
+            <button type="button" class="sidebar-toggle" data-sidebar-toggle aria-label="فتح القائمة" aria-expanded="false" aria-controls="sidebar"><i class="fas fa-bars"></i></button>
             <span class="welcome">مرحباً، {{ current_user.full_name }}</span>
             <span class="role-badge">{{ current_user.get_role_arabic() }}</span>
             <button type="button" class="theme-toggle" data-theme-toggle title="المظهر" aria-label="تبديل المظهر"><i class="fas fa-sun"></i></button>
