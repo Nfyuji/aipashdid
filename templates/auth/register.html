@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    {% include 'components/theme_head.html' %}
+    <title>إنشاء حساب - PhishDetector Enterprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1050px;
+            width: 100%;
+            min-height: 650px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Branding Panel */
+        .auth-branding {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(139, 92, 246, 0.08));
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-branding::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .branding-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .branding-shield {
+            font-size: 5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            animation: shieldPulse 3s ease-in-out infinite;
+        }
+
+        .branding-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .branding-content p {
+            font-size: 0.95rem;
+            max-width: 300px;
+            line-height: 1.8;
+        }
+
+        .branding-features {
+            margin-top: 2.5rem;
+            text-align: right;
+        }
+
+        .branding-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .branding-feature i {
+            color: var(--accent-green);
+            font-size: 0.85rem;
+        }
+
+        /* Form Panel */
+        .auth-form-panel {
+            background: var(--bg-card);
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-white);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .auth-logo i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .auth-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .auth-header p {
+            font-size: 0.88rem;
+        }
+
+        /* Form Fields */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+
+        .form-group .form-label {
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .form-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: var(--transition-normal);
+        }
+
+        .input-wrapper:focus-within .form-icon {
+            color: var(--primary);
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            transition: var(--transition-normal);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 0.4rem;
+            height: 3px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 3px;
+            transition: var(--transition-normal);
+        }
+
+        .strength-weak {
+            width: 25%;
+            background: var(--accent-red);
+        }
+
+        .strength-fair {
+            width: 50%;
+            background: var(--accent-amber);
+        }
+
+        .strength-good {
+            width: 75%;
+            background: var(--primary);
+        }
+
+        .strength-strong {
+            width: 100%;
+            background: var(--accent-green);
+        }
+
+        .strength-text {
+            font-size: 0.72rem;
+            margin-top: 0.25rem;
+            color: var(--text-muted);
+        }
+
+        /* Select */
+        select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239fa8c2' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center;
+            cursor: pointer;
+        }
+
+        select.form-control option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Terms */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .terms-check a {
+            color: var(--primary);
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-branding {
+                display: none;
+            }
+
+            .auth-form-panel {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button type="button" class="theme-toggle" data-theme-toggle title="المظهر" aria-label="تبديل المظهر" style="position:fixed;z-index:9999;inset-inline-end:1rem;top:1rem;"><i class="fas fa-sun"></i></button>
+    <div class="cyber-grid"></div>
+    <div class="particles-bg" id="particles"></div>
+
+    <div class="auth-page">
+        <div class="auth-container scale-in">
+
+            <!-- Form Panel -->
+            <div class="auth-form-panel">
+                <div class="auth-header">
+                    <a href="{{ url_for('auth.landing') }}" class="auth-logo">
+                        <i class="fas fa-shield-halved"></i>
+                        PhishDetector
+                    </a>
+                    <h1>إنشاء حساب جديد ✨</h1>
+                    <p>انضم إلى منصتنا واحمِ مؤسستك من التهديدات</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <i
+                        class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group fade-in-up fade-in-up-delay-1">
+                        <label class="form-label">الاسم الكامل</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user form-icon"></i>
+                            <input type="text" name="full_name" class="form-control" placeholder="أدخل اسمك الكامل"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-row fade-in-up fade-in-up-delay-2">
+                        <div class="form-group">
+                            <label class="form-label">اسم المستخدم</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at form-icon"></i>
+                                <input type="text" name="username" class="form-control" placeholder="اسم المستخدم"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope form-icon"></i>
+                                <input type="email" name="email" class="form-control" placeholder="example@company.com"
+                                    required dir="ltr" style="text-align: right;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group fade-in-up fade-in-up-delay-2">
+                        <label class="form-label">القسم</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-building form-icon"></i>
+                            <select name="department" class="form-control">
+                                <option value="عام">عام</option>
+                                <option value="قسم تقنية المعلومات">قسم تقنية المعلومات</option>
+                                <option value="الموارد البشرية">الموارد البشرية</option>
+                                <option value="المالية">المالية</option>
+                                <option value="التسويق">التسويق</option>
+                                <option value="الأمن السيبراني">الأمن السيبراني</option>
+                                <option value="الإدارة العامة">الإدارة العامة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row fade-in-up fade-in-up-delay-3">
+                        <div class="form-group">
+                            <label class="form-label">كلمة المرور</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock form-icon"></i>
+                                <input type="password" name="password" class="form-control"
+                                    placeholder="6 أحرف على الأقل" required id="passwordField"
+                                    style="padding-left: 2.5rem;" oninput="checkStrength(this.value)">
+                                <button type="button" class="password-toggle"
+                                    onclick="togglePassword('passwordField', 'toggleIcon1')">
+                                    <i class="fas fa-eye" id="toggleIcon1"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="password-strength-bar" id="strengthBar"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">تأكيد كلمة المرور</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock form-icon"></i>
+                                <input type="password" name="confirm_password" class="form-control"
+                                    placeholder="أعد كتابة كلمة المرور" required id="confirmField"
+                                    style="padding-left: 2.5rem;">
+                                <button type="button" class="password-toggle"
+                                    onclick="togglePassword('confirmField', 'toggleIcon2')">
+                                    <i class="fas fa-eye" id="toggleIcon2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="terms-check fade-in-up fade-in-up-delay-4">
+                        <input type="checkbox" required id="terms">
+                        <label for="terms">أوافق على <a href="#">شروط الاستخدام</a> و <a href="#">سياسة
+                                الخصوصية</a></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary auth-submit fade-in-up fade-in-up-delay-4">
+                        <i class="fas fa-user-plus"></i>
+                        إنشاء الحساب
+                    </button>
+                </form>
+
+                <div class="auth-footer fade-in-up fade-in-up-delay-5">
+                    لديك حساب بالفعل؟ <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>
+                </div>
+            </div>
+
+            <!-- Branding Panel -->
+            <div class="auth-branding">
+                <div class="branding-content">
+                    <div class="branding-shield">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2>انضم إلينا</h2>
+                    <p>أنشئ حسابك وابدأ في حماية مؤسستك من التهديدات الإلكترونية</p>
+                    <div class="branding-features">
+                        <div class="branding-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>حساب مجاني بالكامل</span>
+                        </div>
+                        <div class="branding-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>تحليل غير محدود للرسائل</span>
+                        </div>
+                        <div class="branding-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>تقارير أمنية شاملة</span>
+                        </div>
+                        <div class="branding-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>دعم فني على مدار الساعة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                particle.style.animationDelay = (Math.random() * 5) + 's';
+                particle.style.width = (Math.random() * 3 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Toggle password visibility
+        function togglePassword(fieldId, iconId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(iconId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Password strength checker
+        function checkStrength(password) {
+            const bar = document.getElementById('strengthBar');
+            const text = document.getElementById('strengthText');
+            let strength = 0;
+
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            bar.className = 'password-strength-bar';
+
+            if (strength <= 1) {
+                bar.classList.add('strength-weak');
+                text.textContent = 'ضعيفة';
+                text.style.color = 'var(--accent-red)';
+            } else if (strength === 2) {
+                bar.classList.add('strength-fair');
+                text.textContent = 'مقبولة';
+                text.style.color = 'var(--accent-amber)';
+            } else if (strength === 3) {
+                bar.classList.add('strength-good');
+                text.textContent = 'جيدة';
+                text.style.color = 'var(--primary)';
+            } else {
+                bar.classList.add('strength-strong');
+                text.textContent = 'قوية';
+                text.style.color = 'var(--accent-green)';
+            }
+
+            if (password.length === 0) {
+                bar.className = 'password-strength-bar';
+                text.textContent = '';
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

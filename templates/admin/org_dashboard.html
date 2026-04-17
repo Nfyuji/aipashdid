@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}لوحة المؤسسة - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-building"></i> لوحة المؤسسة</h1>
+    <p class="text-muted">نظرة عامة على أداء المنظومة والأمن</p>
+</div>
+<div class="cards-grid">
+    <div class="stat-card">
+        <i class="fas fa-envelope-open-text"></i>
+        <span class="stat-value">{{ total_emails }}</span>
+        <span class="stat-label">رسائل مُحللة</span>
+    </div>
+    <div class="stat-card stat-danger">
+        <i class="fas fa-shield-halved"></i>
+        <span class="stat-value">{{ high_risk }}</span>
+        <span class="stat-label">عالية الخطورة</span>
+    </div>
+    <div class="stat-card stat-warning">
+        <i class="fas fa-clock"></i>
+        <span class="stat-value">{{ pending }}</span>
+        <span class="stat-label">قيد المراجعة</span>
+    </div>
+    <div class="stat-card stat-warning">
+        <i class="fas fa-bug"></i>
+        <span class="stat-value">{{ total_threats }}</span>
+        <span class="stat-label">سجل التهديدات</span>
+    </div>
+    <div class="stat-card stat-success">
+        <i class="fas fa-users"></i>
+        <span class="stat-value">{{ total_users }}</span>
+        <span class="stat-label">المستخدمون</span>
+    </div>
+    {% if unread_notifications is defined and unread_notifications %}
+    <div class="stat-card">
+        <i class="fas fa-bell"></i>
+        <span class="stat-value">{{ unread_notifications }}</span>
+        <span class="stat-label">إشعارات جديدة</span>
+    </div>
+    {% endif %}
+</div>
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-link"></i> روابط سريعة</h3>
+    <div class="grid-2">
+        <a href="{{ url_for('admin.users_manage') }}" class="link-row"><i class="fas fa-users"></i> إدارة المستخدمين</a>
+        <a href="{{ url_for('admin.statistics') }}" class="link-row"><i class="fas fa-chart-pie"></i> الإحصائيات</a>
+        <a href="{{ url_for('admin.risk_report') }}" class="link-row"><i class="fas fa-file-alt"></i> تقرير المخاطر</a>
+        <a href="{{ url_for('admin.audit_log') }}" class="link-row"><i class="fas fa-history"></i> سجل النشاط</a>
+        <a href="{{ url_for('admin.pending_messages') }}" class="link-row"><i class="fas fa-clock"></i> رسائل قيد المراجعة</a>
+        <a href="{{ url_for('security.security_center') }}" class="link-row"><i class="fas fa-server"></i> مركز الأمن</a>
+        <a href="{{ url_for('security.suspicious_inbox') }}" class="link-row"><i class="fas fa-inbox"></i> صندوق المشبوه</a>
+        <a href="{{ url_for('admin.system_settings') }}" class="link-row"><i class="fas fa-cog"></i> إعدادات النظام</a>
+        <a href="{{ url_for('admin.notifications_list') }}" class="link-row"><i class="fas fa-bell"></i> الإشعارات</a>
+    </div>
+</div>
+{% endblock %}

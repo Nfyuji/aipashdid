@@ -1,0 +1,84 @@
+<!-- القائمة الجانبية - كل دور يرى أقسامه فقط -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-shield-halved"></i>
+        <span>PhishDetector</span>
+    </div>
+    <nav class="sidebar-nav">
+        {% set is_admin = current_user.role == 'admin' %}
+
+        {% if is_admin %}
+        <!-- 1) لوحة التحكم والإحصائيات (أدمن فقط) -->
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-crown"></i> لوحة الإدارة</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.org_dashboard' }}" href="{{ url_for('admin.org_dashboard') }}"><i class="fas fa-tachometer-alt"></i> لوحة المؤسسة</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.statistics' }}" href="{{ url_for('admin.statistics') }}"><i class="fas fa-chart-pie"></i> الإحصائيات</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.risk_report' }}" href="{{ url_for('admin.risk_report') }}"><i class="fas fa-file-alt"></i> تقرير المخاطر</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.pending_messages' }}" href="{{ url_for('admin.pending_messages') }}"><i class="fas fa-clock"></i> رسائل قيد المراجعة</a>
+        </div>
+        <!-- 2) إدارة المستخدمين والصلاحيات -->
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-users-cog"></i> المستخدمون والصلاحيات</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.users_manage' }}" href="{{ url_for('admin.users_manage') }}"><i class="fas fa-users"></i> إدارة المستخدمين</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.user_permissions' }}" href="{{ url_for('admin.user_permissions') }}"><i class="fas fa-user-shield"></i> الصلاحيات والأدوار</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.audit_log' }}" href="{{ url_for('admin.audit_log') }}"><i class="fas fa-history"></i> سجل النشاط</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.users_import' }}" href="{{ url_for('admin.users_import') }}"><i class="fas fa-file-import"></i> استيراد/تصدير</a>
+        </div>
+        <!-- 3) المراقبة والسجلات -->
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-clipboard-list"></i> السجلات والمراقبة</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.analysis_log' }}" href="{{ url_for('admin.analysis_log') }}"><i class="fas fa-search"></i> سجل التحليلات</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.analyze' }}" href="{{ url_for('employee.analyze') }}"><i class="fas fa-envelope-open-text"></i> تحليل بريد</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.attack_log' }}" href="{{ url_for('admin.attack_log') }}"><i class="fas fa-bug"></i> سجل الهجمات</a>
+        </div>
+        <!-- 4) النظام والإعدادات -->
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-cog"></i> النظام والإعدادات</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.system_settings' }}" href="{{ url_for('admin.system_settings') }}"><i class="fas fa-sliders-h"></i> إعدادات النظام</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.templates_list' }}" href="{{ url_for('admin.templates_list') }}"><i class="fas fa-file-code"></i> قوالب الرسائل</a>
+        </div>
+        <!-- 5) التواصل والمهام -->
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-tasks"></i> التواصل والمهام</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.messages_inbox' }}" href="{{ url_for('admin.messages_inbox') }}"><i class="fas fa-envelope"></i> الرسائل الداخلية</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.tasks_list' }}" href="{{ url_for('admin.tasks_list') }}"><i class="fas fa-tasks"></i> المهام (To-Do)</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'admin.notifications_list' }}" href="{{ url_for('admin.notifications_list') }}"><i class="fas fa-bell"></i> الإشعارات</a>
+        </div>
+        {% endif %}
+
+        {% if not is_admin %}
+        <!-- غير أدمن: عرض حسب الدور فقط -->
+        {% if current_user.role == 'security' %}
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-shield-halved"></i> الأمن</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'security.security_center' }}" href="{{ url_for('security.security_center') }}"><i class="fas fa-server"></i> مركز الأمن</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'security.block_lists' }}" href="{{ url_for('security.block_lists') }}"><i class="fas fa-ban"></i> قوائم الحظر</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'security.threat_map' }}" href="{{ url_for('security.threat_map') }}"><i class="fas fa-map"></i> خريطة التهديدات</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'security.suspicious_inbox' }}" href="{{ url_for('security.suspicious_inbox') }}"><i class="fas fa-inbox"></i> صندوق المشبوه</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'security.report_threat' }}" href="{{ url_for('security.report_threat') }}"><i class="fas fa-plus-circle"></i> إبلاغ عن تهديد</a>
+        </div>
+        {% endif %}
+        {% if current_user.role == 'manager' %}
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-users-cog"></i> مدير القسم</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'manager.department_dashboard' }}" href="{{ url_for('manager.department_dashboard') }}"><i class="fas fa-tachometer-alt"></i> لوحة القسم</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'manager.my_team' }}" href="{{ url_for('manager.my_team') }}"><i class="fas fa-users"></i> فريقي</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'manager.department_reports' }}" href="{{ url_for('manager.department_reports') }}"><i class="fas fa-chart-bar"></i> تقارير القسم</a>
+        </div>
+        {% endif %}
+        {% if current_user.role == 'employee' %}
+        <div class="nav-section">
+            <span class="nav-section-title"><i class="fas fa-user"></i> عملي</span>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.dashboard' }}" href="{{ url_for('employee.dashboard') }}"><i class="fas fa-tachometer-alt"></i> لوحتي</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.inbox' }}" href="{{ url_for('employee.inbox') }}"><i class="fas fa-inbox"></i> صندوق الوارد</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.analyze' }}" href="{{ url_for('employee.analyze') }}"><i class="fas fa-search"></i> تحليل بريد</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.my_log' }}" href="{{ url_for('employee.my_log') }}"><i class="fas fa-history"></i> سجلي</a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'employee.profile' }}" href="{{ url_for('employee.profile') }}"><i class="fas fa-id-card"></i> الملف الشخصي</a>
+        </div>
+        {% endif %}
+        {% endif %}
+    </nav>
+    <div class="sidebar-footer">
+        <a href="{{ url_for('auth.landing') }}"><i class="fas fa-home"></i> الصفحة الرئيسية</a>
+    </div>
+</aside>

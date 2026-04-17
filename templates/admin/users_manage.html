@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}إدارة المستخدمين - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-users"></i> إدارة المستخدمين</h1>
+    <p class="text-muted">عرض، تعديل الأدوار، تفعيل/تعطيل، إعادة تعيين كلمة المرور</p>
+</div>
+<p><a href="{{ url_for('admin.users_export') }}" class="btn btn-primary"><i class="fas fa-file-download"></i> تصدير CSV</a>
+   <a href="{{ url_for('admin.users_import') }}" class="btn btn-secondary"><i class="fas fa-file-upload"></i> استيراد CSV</a></p>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>اسم المستخدم</th>
+                <th>البريد</th>
+                <th>القسم</th>
+                <th>الدور</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.department }}</td>
+                <td><span class="badge badge-info">{{ u.get_role_arabic() }}</span></td>
+                <td>{% if u.is_active %}<span class="badge badge-success">نشط</span>{% else %}<span class="badge badge-danger">معطّل</span>{% endif %}</td>
+                <td>
+                    {% if u.id != current_user.id %}
+                    <form method="post" action="{{ url_for('admin.users_manage') }}" style="display: inline-flex; gap: 0.25rem; flex-wrap: wrap;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="user_id" value="{{ u.id }}">
+                        <select name="role" class="form-control" style="width: auto;">
+                            <option value="employee" {{ 'selected' if u.role == 'employee' }}>موظف</option>
+                            <option value="manager" {{ 'selected' if u.role == 'manager' }}>مدير قسم</option>
+                            <option value="security" {{ 'selected' if u.role == 'security' }}>أمن</option>
+                            <option value="admin" {{ 'selected' if u.role == 'admin' }}>مدير عام</option>
+                        </select>
+                        <button type="submit" name="action" value="role" class="btn btn-primary">تحديث الدور</button>
+                        <button type="submit" name="action" value="toggle_active" class="btn btn-secondary">{% if u.is_active %}تعطيل{% else %}تفعيل{% endif %}</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('reset-{{ u.id }}').style.display='inline'">إعادة كلمة المرور</button>
+                    <span id="reset-{{ u.id }}" style="display:none;">
+                        <form method="post" action="{{ url_for('admin.users_manage') }}" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <input type="hidden" name="action" value="reset_password">
+                            <input type="password" name="new_password" placeholder="كلمة جديدة" minlength="6" class="form-control" style="width:120px;display:inline;">
+                            <button type="submit" class="btn btn-primary">تعيين</button>
+                        </form>
+                    </span>
+                    {% else %}
+                    <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

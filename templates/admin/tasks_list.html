@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}المهام (To-Do) - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-tasks"></i> المهام الإدارية</h1>
+    <p class="text-muted">تتبع المهام الأمنية والإدارية</p>
+</div>
+<p><a href="{{ url_for('admin.task_add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة مهمة</a></p>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>العنوان</th>
+                <th>الحالة</th>
+                <th>الأولوية</th>
+                <th>المُعيَّن إليه</th>
+                <th>التاريخ</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tasks %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.title[:50] }}{% if t.title|length > 50 %}...{% endif %}</td>
+                <td><span class="badge badge-secondary">{{ t.get_status_arabic() }}</span></td>
+                <td><span class="badge badge-info">{{ t.get_priority_arabic() }}</span></td>
+                <td>{{ t.assigned_to.full_name if t.assigned_to else '—' }}</td>
+                <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else '—' }}</td>
+                <td><a href="{{ url_for('admin.task_edit', task_id=t.id) }}" class="btn btn-secondary">تعديل</a></td>
+            </tr>
+            {% endfor %}
+            {% if not tasks %}
+            <tr><td colspan="7" class="empty-state">لا توجد مهام. <a href="{{ url_for('admin.task_add') }}">إضافة مهمة</a></td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

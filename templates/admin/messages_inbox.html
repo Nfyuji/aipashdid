@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}الرسائل الداخلية - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-envelope"></i> الرسائل الداخلية</h1>
+    <p class="text-muted">رسائل بين الفرق (مثل صندوق بريد داخلي)</p>
+</div>
+<p><a href="{{ url_for('admin.message_send') }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> إرسال رسالة</a></p>
+<h3 style="margin:1rem 0 0.5rem;">الواردة</h3>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>من</th>
+                <th>الموضوع</th>
+                <th>التاريخ</th>
+                <th>مقروءة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in received %}
+            <tr>
+                <td>{{ m.sender.full_name if m.sender else '—' }}</td>
+                <td>{{ m.subject }}</td>
+                <td>{{ m.created_at.strftime('%Y-%m-%d %H:%M') if m.created_at else '—' }}</td>
+                <td>{% if m.is_read %}<span class="badge badge-success">نعم</span>{% else %}<span class="badge badge-warning">جديد</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+            {% if not received %}
+            <tr><td colspan="4" class="empty-state">لا توجد رسائل واردة</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<h3 style="margin:1rem 0 0.5rem;">المرسلة</h3>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>إلى</th>
+                <th>الموضوع</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in sent %}
+            <tr>
+                <td>{{ m.receiver.full_name if m.receiver else '—' }}</td>
+                <td>{{ m.subject }}</td>
+                <td>{{ m.created_at.strftime('%Y-%m-%d %H:%M') if m.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+            {% if not sent %}
+            <tr><td colspan="3" class="empty-state">لا توجد رسائل مرسلة</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'تعديل القالب' if t else 'إضافة قالب' }} - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-file-code"></i> {{ 'تعديل القالب' if t else 'إضافة قالب' }}</h1>
+</div>
+<div class="card" style="max-width: 700px;">
+    <form method="post" action="{{ url_for('admin.template_edit', tid=t.id) if t else url_for('admin.template_add') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label>الاسم</label>
+            <input type="text" name="name" class="form-control" value="{{ t.name if t else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>الرمز (slug)</label>
+            <input type="text" name="slug" class="form-control" value="{{ t.slug if t else '' }}" {{ 'readonly' if t else '' }} placeholder="مثال: warning_high_risk">
+        </div>
+        <div class="form-group">
+            <label>الموضوع</label>
+            <input type="text" name="subject" class="form-control" value="{{ t.subject if t else '' }}">
+        </div>
+        <div class="form-group">
+            <label>النص (HTML)</label>
+            <textarea name="body_html" class="form-control" rows="5">{{ t.body_html if t else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>النص (عادي)</label>
+            <textarea name="body_text" class="form-control" rows="3">{{ t.body_text if t else '' }}</textarea>
+        </div>
+        {% if t %}
+        <div class="form-group">
+            <label>نشط</label>
+            <select name="is_active" class="form-control">
+                <option value="1" {{ 'selected' if t.is_active }}>نعم</option>
+                <option value="0" {{ 'selected' if not t.is_active }}>لا</option>
+            </select>
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <a href="{{ url_for('admin.templates_list') }}" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div>
+{% endblock %}

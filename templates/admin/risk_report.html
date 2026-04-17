@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}تقرير المخاطر - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-file-alt"></i> تقرير المخاطر</h1>
+    <p class="text-muted">سجل التهديدات والرسائل عالية الخطورة</p>
+</div>
+<h3 style="margin-bottom: 0.75rem;"><i class="fas fa-bug"></i> التهديدات المسجلة</h3>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>العنوان</th>
+                <th>الخطورة</th>
+                <th>المصدر / الدولة</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in threats %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.title[:60] }}{% if t.title|length > 60 %}...{% endif %}</td>
+                <td><span class="badge {{ t.get_severity_badge_class() }}">{{ t.get_severity_arabic() }}</span></td>
+                <td>{{ t.source_ip or '—' }} {{ t.country_code or '' }}</td>
+                <td>{{ t.status }}</td>
+                <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+            {% if not threats %}
+            <tr><td colspan="6" class="empty-state">لا توجد تهديدات مسجلة</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<h3 style="margin: 1.5rem 0 0.75rem;"><i class="fas fa-envelope"></i> رسائل عالية الخطورة</h3>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المرسل</th>
+                <th>الموضوع</th>
+                <th>النقاط</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in high_emails %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.sender_email }}</td>
+                <td>{{ e.subject[:50] }}{% if e.subject|length > 50 %}...{% endif %}</td>
+                <td><span class="badge badge-danger">{{ e.risk_score }}</span></td>
+                <td>{{ e.status }}</td>
+                <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') if e.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+            {% if not high_emails %}
+            <tr><td colspan="6" class="empty-state">لا توجد رسائل عالية الخطورة</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

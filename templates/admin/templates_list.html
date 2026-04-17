@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}قوالب الرسائل - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-file-code"></i> قوالب الرسائل</h1>
+    <p class="text-muted">قوالب التحذير ورسائل النظام</p>
+</div>
+<p><a href="{{ url_for('admin.template_add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> إضافة قالب</a></p>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الاسم</th>
+                <th>الرمز</th>
+                <th>الموضوع</th>
+                <th>نشط</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in items %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.name }}</td>
+                <td>{{ t.slug }}</td>
+                <td>{{ t.subject[:40] if t.subject else '—' }}{% if t.subject and t.subject|length > 40 %}...{% endif %}</td>
+                <td>{% if t.is_active %}<span class="badge badge-success">نعم</span>{% else %}<span class="badge badge-secondary">لا</span>{% endif %}</td>
+                <td><a href="{{ url_for('admin.template_edit', tid=t.id) }}" class="btn btn-secondary">تعديل</a></td>
+            </tr>
+            {% endfor %}
+            {% if not items %}
+            <tr><td colspan="6" class="empty-state">لا توجد قوالب. <a href="{{ url_for('admin.template_add') }}">إضافة قالب</a></td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

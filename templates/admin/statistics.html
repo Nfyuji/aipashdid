@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}الإحصائيات - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-chart-pie"></i> الإحصائيات</h1>
+    <p class="text-muted">إحصائيات عامة للنشاط والمخاطر والمستخدمين</p>
+</div>
+<div class="cards-grid">
+    <div class="stat-card">
+        <i class="fas fa-envelope-open-text"></i>
+        <span class="stat-value">{{ total_emails }}</span>
+        <span class="stat-label">إجمالي الرسائل المُحللة</span>
+    </div>
+    <div class="stat-card stat-success">
+        <i class="fas fa-check-circle"></i>
+        <span class="stat-value">{{ low_count }}</span>
+        <span class="stat-label">منخفض الخطورة</span>
+    </div>
+    <div class="stat-card stat-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="stat-value">{{ medium_count }}</span>
+        <span class="stat-label">متوسط الخطورة</span>
+    </div>
+    <div class="stat-card stat-danger">
+        <i class="fas fa-times-circle"></i>
+        <span class="stat-value">{{ high_count }}</span>
+        <span class="stat-label">عالي الخطورة</span>
+    </div>
+</div>
+<div class="grid-2">
+    <div class="card">
+        <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-envelope"></i> حسب الحالة</h3>
+        <ul style="list-style: none;">
+            {% for status, count in by_status.items() %}
+            <li style="padding: 0.35rem 0;">{{ status }}: <strong>{{ count }}</strong></li>
+            {% endfor %}
+            {% if not by_status %}
+            <li class="empty-state">لا توجد بيانات</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-users"></i> المستخدمون حسب الدور</h3>
+        <ul style="list-style: none;">
+            {% for role, count in users_by_role.items() %}
+            <li style="padding: 0.35rem 0;">{{ {'admin':'مدير عام','security':'أمن','manager':'مدير قسم','employee':'موظف'}[role] if role in ['admin','security','manager','employee'] else role }}: <strong>{{ count }}</strong></li>
+            {% endfor %}
+            {% if not users_by_role %}
+            <li class="empty-state">لا يوجد مستخدمون</li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% if by_department is defined and by_department %}
+<div class="card">
+    <h3 style="margin-bottom: 0.75rem;"><i class="fas fa-sitemap"></i> المستخدمون حسب القسم</h3>
+    <ul style="list-style: none;">
+        {% for dept, count in by_department.items() %}
+        <li style="padding: 0.35rem 0;">{{ dept }}: <strong>{{ count }}</strong></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<p><a href="{{ url_for('admin.reports_export', format='csv') }}" class="btn btn-primary"><i class="fas fa-file-download"></i> تصدير CSV</a>
+   <a href="{{ url_for('admin.reports_export', format='xlsx') }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> تصدير Excel</a>
+   <a href="{{ url_for('admin.reports_export', format='pdf') }}" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> تصدير PDF</a></p>
+{% endblock %}

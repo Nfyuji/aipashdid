@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    {% include 'components/theme_head.html' %}
+    <title>{% block title %}PhishDetector{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="dashboard-body">
+    {% if current_user.is_authenticated %}
+    {% include 'components/sidebar.html' %}
+    {% endif %}
+    <main class="main-content">
+        {% if current_user.is_authenticated %}
+        <header class="dashboard-header">
+            <span class="welcome">مرحباً، {{ current_user.full_name }}</span>
+            <span class="role-badge">{{ current_user.get_role_arabic() }}</span>
+            <button type="button" class="theme-toggle" data-theme-toggle title="المظهر" aria-label="تبديل المظهر"><i class="fas fa-sun"></i></button>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout"><i class="fas fa-sign-out-alt"></i> خروج</a>
+        </header>
+        {% endif %}
+        <div class="content-inner">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}" style="padding: 0.75rem 1rem; margin-bottom: 1rem; border-radius: var(--radius-sm); background: {% if cat == 'success' %}var(--accent-green-glow){% elif cat == 'error' %}var(--accent-red-glow){% elif cat == 'warning' %}var(--accent-amber-glow){% else %}var(--primary-glow){% endif %};">{{ msg }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

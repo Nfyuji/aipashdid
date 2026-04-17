@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}سجل التحليلات - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-search"></i> سجل التحليلات</h1>
+    <p class="text-muted">كل البريد الذي تم تحليله من قبل المستخدمين</p>
+</div>
+<p><a href="{{ url_for('admin.reports_export', format='csv') }}" class="btn btn-primary"><i class="fas fa-file-csv"></i> تصدير CSV</a>
+   <a href="{{ url_for('admin.reports_export', format='xlsx') }}" class="btn btn-secondary"><i class="fas fa-file-excel"></i> تصدير Excel</a>
+   <a href="{{ url_for('admin.reports_export', format='pdf') }}" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> تصدير PDF</a></p>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المرسل</th>
+                <th>الموضوع</th>
+                <th>الخطورة</th>
+                <th>النقاط</th>
+                <th>حللها</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in pagination.items %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.sender_email }}</td>
+                <td>{{ e.subject[:45] if e.subject else '—' }}{% if e.subject and e.subject|length > 45 %}...{% endif %}</td>
+                <td><span class="badge {{ e.get_risk_badge_class() }}">{{ e.get_risk_arabic() }}</span></td>
+                <td>{{ e.risk_score }}</td>
+                <td>{{ e.analyzed_by.full_name if e.analyzed_by else '—' }}</td>
+                <td>{{ e.created_at.strftime('%Y-%m-%d %H:%M') if e.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if pagination.pages > 1 %}
+<div class="pagination" style="margin-top:1rem;">
+    {% if pagination.has_prev %}<a href="{{ url_for('admin.analysis_log', page=pagination.prev_num) }}">السابق</a>{% endif %}
+    صفحة {{ pagination.page }} من {{ pagination.pages }}
+    {% if pagination.has_next %}<a href="{{ url_for('admin.analysis_log', page=pagination.next_num) }}">التالي</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

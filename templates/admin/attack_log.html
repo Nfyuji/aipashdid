@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}سجل الهجمات - PhishDetector{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-bug"></i> سجل الهجمات</h1>
+    <p class="text-muted">كل محاولات الهجوم المسجلة مع الوقت والمصدر ومستوى الخطورة</p>
+</div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>العنوان</th>
+                <th>الخطورة</th>
+                <th>المصدر / الدولة</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in threats %}
+            <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.title[:55] }}{% if t.title|length > 55 %}...{% endif %}</td>
+                <td><span class="badge {{ t.get_severity_badge_class() }}">{{ t.get_severity_arabic() }}</span></td>
+                <td>{{ t.source_ip or '—' }} {{ t.country_code or '' }}</td>
+                <td>{{ t.status }}</td>
+                <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') if t.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+            {% if not threats %}
+            <tr><td colspan="6" class="empty-state">لا توجد سجلات هجمات</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
