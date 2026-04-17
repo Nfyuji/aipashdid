@@ -668,7 +668,7 @@
     <div class="landing-drawer-backdrop" data-landing-nav-close></div>
     
     <!-- القائمة المنسدلة (تظهر من اليمين) -->
-    <aside class="landing-drawer" id="landingDrawer" aria-hidden="true">
+    <aside class="landing-drawer" id="landingDrawer" aria-hidden="true" inert>
         <div class="landing-drawer-header">
             <span><i class="fas fa-shield-halved"></i> القائمة</span>
             <button type="button" class="landing-drawer-close" data-landing-nav-close aria-label="إغلاق">
@@ -765,15 +765,27 @@
             if (!toggleBtn || !drawer) return;
             
             const openDrawer = () => {
+                drawer.removeAttribute('inert');
+                drawer.setAttribute('aria-hidden', 'false');
                 body.classList.add('landing-nav-open');
                 toggleBtn.setAttribute('aria-expanded', 'true');
-                drawer.setAttribute('aria-hidden', 'false');
             };
-            
+
             const closeDrawer = () => {
+                if (!body.classList.contains('landing-nav-open')) return;
+                const active = document.activeElement;
+                if (active && drawer.contains(active)) {
+                    active.blur();
+                }
                 body.classList.remove('landing-nav-open');
                 toggleBtn.setAttribute('aria-expanded', 'false');
                 drawer.setAttribute('aria-hidden', 'true');
+                drawer.setAttribute('inert', '');
+                requestAnimationFrame(() => {
+                    if (window.innerWidth < 992 && toggleBtn.offsetParent !== null) {
+                        toggleBtn.focus({ preventScroll: true });
+                    }
+                });
             };
             
             // فتح القائمة
