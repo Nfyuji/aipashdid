@@ -172,9 +172,12 @@
             flex-shrink: 0;
         }
 
-        /* الأزرار العادية — من 992px فما فوق */
+        /*
+         * أقل من 1200px: دخول/تسجيل داخل قائمة جانبية + زر همبرغر.
+         * لابتوب 1366×768 كان يقع تحت 992 سابقاً فيظهر شريط مزدحم والدراور معطّل — رفعنا العتبة.
+         */
         .nav-auth-desktop { display: none; }
-        @media (min-width: 992px) {
+        @media (min-width: 1200px) {
             .nav-auth-desktop {
                 display: flex;
                 align-items: center;
@@ -184,32 +187,30 @@
             }
         }
 
-        /* نص كامل / مختصر حسب عرض الشريط */
         .nav-auth-label-short { display: none; }
-        @media (min-width: 992px) and (max-width: 1100px) {
+        @media (min-width: 1200px) and (max-width: 1320px) {
             .nav-auth-label-full { display: none; }
             .nav-auth-label-short { display: inline; }
         }
-        @media (min-width: 992px) and (max-width: 1180px) {
+        @media (min-width: 1200px) and (max-width: 1360px) {
             .nav-auth-desktop .btn {
                 padding: 0.55rem 0.85rem;
                 font-size: 0.82rem;
             }
         }
-        @media (min-width: 1181px) {
+        @media (min-width: 1361px) {
             .nav-auth-desktop .btn {
                 padding: 0.72rem 1.35rem;
                 font-size: 0.92rem;
             }
         }
-        @media (min-width: 1280px) {
+        @media (min-width: 1440px) {
             .nav-auth-desktop .btn {
                 padding: 0.8rem 1.75rem;
                 font-size: 1rem;
             }
         }
 
-        /* زر القائمة — أقل من 992px */
         .landing-menu-toggle {
             display: flex;
             align-items: center;
@@ -225,7 +226,7 @@
             flex-shrink: 0;
         }
         .landing-menu-toggle:hover { border-color: var(--primary); color: var(--primary); background: rgba(0, 240, 255, 0.1); }
-        @media (min-width: 992px) { .landing-menu-toggle { display: none !important; } }
+        @media (min-width: 1200px) { .landing-menu-toggle { display: none !important; } }
 
         /* ===== القائمة المنسدلة (Drawer) المحسّنة ===== */
         .landing-drawer-backdrop {
@@ -252,26 +253,39 @@
             touch-action: none;
         }
 
-        /*
-         * لوحة الجوال: إزاحة بـ right بدل translateX — في dir=rtl بعض المتصفحات
-         * تعرض الدراور بشكل خاطئ (يظهر جزء من النص فقط أو خلفية ناقصة).
-         */
+        /* غلاف LTR فقط لحركة translate — المحتوى العربي داخل .landing-drawer-inner بـ RTL */
         .landing-drawer {
-            --landing-drawer-w: min(320px, 92vw);
             position: fixed;
             top: 0;
             bottom: 0;
             left: auto;
-            width: var(--landing-drawer-w);
+            right: 0;
+            width: min(320px, 92vw);
             max-width: 100%;
-            right: calc(-1 * var(--landing-drawer-w));
             z-index: 1200;
+            direction: ltr;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
             background: linear-gradient(180deg, rgba(10, 12, 18, 0.99), rgba(5, 6, 10, 1));
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-left: 1px solid rgba(0, 240, 255, 0.25);
             box-shadow: -10px 0 40px rgba(0, 0, 0, 0.55);
-            transition: right 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+            transform: translate3d(100%, 0, 0);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+        }
+        body.landing-nav-open .landing-drawer {
+            transform: translate3d(0, 0, 0);
+        }
+        body:not(.landing-nav-open) .landing-drawer {
+            pointer-events: none;
+        }
+
+        .landing-drawer-inner {
+            direction: rtl;
+            flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
@@ -282,14 +296,8 @@
             padding-inline: 1.25rem;
             padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
         }
-        body.landing-nav-open .landing-drawer {
-            right: 0;
-        }
-        body:not(.landing-nav-open) .landing-drawer {
-            pointer-events: none;
-        }
 
-        @media (min-width: 992px) {
+        @media (min-width: 1200px) {
             .landing-drawer,
             .landing-drawer-backdrop {
                 display: none !important;
@@ -713,19 +721,21 @@
     
     <!-- القائمة المنسدلة (تظهر من اليمين) -->
     <aside class="landing-drawer" id="landingDrawer" aria-hidden="true" inert>
-        <div class="landing-drawer-header">
-            <span><i class="fas fa-shield-halved"></i> القائمة</span>
-            <button type="button" class="landing-drawer-close" data-landing-nav-close aria-label="إغلاق">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="landing-drawer-links">
-            <a href="{{ url_for('auth.login') }}" class="btn btn-glow">
-                <i class="fas fa-fingerprint"></i> دخول النظام
-            </a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-solid">
-                إنشاء حساب <i class="fas fa-arrow-left"></i>
-            </a>
+        <div class="landing-drawer-inner">
+            <div class="landing-drawer-header">
+                <span><i class="fas fa-shield-halved" aria-hidden="true"></i> القائمة</span>
+                <button type="button" class="landing-drawer-close" data-landing-nav-close aria-label="إغلاق القائمة">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="landing-drawer-links">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-glow">
+                    <i class="fas fa-fingerprint" aria-hidden="true"></i> دخول النظام
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-solid">
+                    إنشاء حساب <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
     </aside>
 
@@ -799,21 +809,34 @@
             else nav.classList.remove('scrolled');
         });
 
-        // نظام القائمة المنسدلة المحسّن
+        // قائمة جانبية: نفس منطق max-width 1199px كما في CSS (أقل من 1200px)
         (function() {
             const body = document.body;
             const toggleBtn = document.querySelector('[data-landing-nav-toggle]');
             const drawer = document.getElementById('landingDrawer');
             const closeBtns = document.querySelectorAll('[data-landing-nav-close]');
-            
+            const mqCompactNav = window.matchMedia('(max-width: 1199px)');
+
+            function useCompactLandingNav() {
+                return mqCompactNav.matches;
+            }
+
+            function syncMenuToggleIcon(isOpen) {
+                const icon = toggleBtn.querySelector('i');
+                if (!icon) return;
+                icon.className = isOpen ? 'fas fa-times' : 'fas fa-bars';
+                toggleBtn.setAttribute('aria-label', isOpen ? 'إغلاق القائمة' : 'فتح القائمة');
+            }
+
             if (!toggleBtn || !drawer) return;
-            
+
             const openDrawer = () => {
                 drawer.removeAttribute('inert');
                 drawer.setAttribute('aria-hidden', 'false');
                 document.documentElement.classList.add('landing-nav-open');
                 body.classList.add('landing-nav-open');
                 toggleBtn.setAttribute('aria-expanded', 'true');
+                syncMenuToggleIcon(true);
             };
 
             const closeDrawer = () => {
@@ -827,20 +850,19 @@
                 toggleBtn.setAttribute('aria-expanded', 'false');
                 drawer.setAttribute('aria-hidden', 'true');
                 drawer.setAttribute('inert', '');
+                syncMenuToggleIcon(false);
                 requestAnimationFrame(() => {
-                    if (window.innerWidth < 992 && toggleBtn.offsetParent !== null) {
+                    if (useCompactLandingNav() && toggleBtn.offsetParent !== null) {
                         toggleBtn.focus({ preventScroll: true });
                     }
                 });
             };
-            
-            // فتح القائمة
+
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (window.innerWidth < 992) {
-                    if (body.classList.contains('landing-nav-open')) closeDrawer();
-                    else openDrawer();
-                }
+                if (!useCompactLandingNav()) return;
+                if (body.classList.contains('landing-nav-open')) closeDrawer();
+                else openDrawer();
             });
             
             closeBtns.forEach(btn => {
@@ -856,8 +878,11 @@
             if (backdrop) backdrop.addEventListener('click', closeDrawer);
             
             // إغلاق عند تغيير حجم الشاشة إلى كبير
+            mqCompactNav.addEventListener('change', () => {
+                if (!useCompactLandingNav()) closeDrawer();
+            });
             window.addEventListener('resize', () => {
-                if (window.innerWidth >= 992) closeDrawer();
+                if (!useCompactLandingNav()) closeDrawer();
             });
             
             // إغلاق بالضغط على ESC
