@@ -43,6 +43,57 @@
         getTheme: currentTheme
     };
 
+    function initSidebarNav() {
+        var body = document.body;
+        var toggle = document.querySelector('[data-sidebar-toggle]');
+        var backdrop = document.querySelector('.sidebar-backdrop');
+        var sidebar = document.getElementById('sidebar');
+        if (!toggle || !sidebar) return;
+
+        function setOpen(open) {
+            if (open) {
+                body.classList.add('nav-sidebar-open');
+                toggle.setAttribute('aria-expanded', 'true');
+                if (backdrop) backdrop.setAttribute('aria-hidden', 'false');
+            } else {
+                body.classList.remove('nav-sidebar-open');
+                toggle.setAttribute('aria-expanded', 'false');
+                if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        function isMobileNav() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        toggle.addEventListener('click', function () {
+            if (!isMobileNav()) return;
+            setOpen(!body.classList.contains('nav-sidebar-open'));
+        });
+
+        document.querySelectorAll('[data-sidebar-close]').forEach(function (el) {
+            el.addEventListener('click', function () {
+                setOpen(false);
+            });
+        });
+
+        sidebar.querySelectorAll('a.nav-link, .sidebar-footer a').forEach(function (a) {
+            a.addEventListener('click', function () {
+                if (isMobileNav()) setOpen(false);
+            });
+        });
+
+        window.addEventListener('resize', function () {
+            if (!isMobileNav()) setOpen(false);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && body.classList.contains('nav-sidebar-open')) {
+                setOpen(false);
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         syncToggleUi();
         document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
@@ -50,6 +101,7 @@
                 toggleTheme();
             });
         });
+        initSidebarNav();
     });
 
     window.addEventListener('storage', function (e) {
